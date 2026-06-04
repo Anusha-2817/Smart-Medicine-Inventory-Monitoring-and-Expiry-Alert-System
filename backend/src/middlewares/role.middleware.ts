@@ -7,7 +7,9 @@ export const authorize = (...roles: string[]) => {
     next: NextFunction
   ) => {
 
-    const user = (req as any).user;
+     const user = (req as any).user;
+
+    console.log("USER FROM TOKEN:", user);
 
     if (!roles.includes(user.role)) {
       return res.status(403).json({
