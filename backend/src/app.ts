@@ -7,7 +7,7 @@ import stockMovementRoutes from "./modules/stock-movements/stock-movement.routes
 import alertRoutes from "./modules/alerts/alerts.routes";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes";
 import notificationRoutes from "./modules/notifications/notification.routes";
-
+import purchaseOrderRoutes from "./modules/purchase-orders/purchase-order.routes";
 const app = express();
 
 app.use(express.json());
@@ -24,4 +24,5 @@ app.use("/api/stock-movements",stockMovementRoutes);
 app.use("/api/alerts",alertRoutes);
 app.use("/api/dashboard",dashboardRoutes);
 app.use("/api/notifications",notificationRoutes);
+app.use("/api/purchase-orders",purchaseOrderRoutes);
 export default app;
