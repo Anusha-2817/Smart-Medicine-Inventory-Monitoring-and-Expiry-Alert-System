@@ -1,4 +1,4 @@
-import { AlertType, Severity,BatchStatus} from "@prisma/client";
+import { AlertType, Severity,BatchStatus,NotificationType,} from "@prisma/client";
 import { prisma } from "../../config/prisma";
 
 export const getAllAlerts = async () => {
@@ -72,19 +72,34 @@ export const generateLowStockAlerts =
           continue;
         }
 
-        await prisma.alert.create({
-          data: {
+        const alert = await prisma.alert.create({
+        data: {
             medicineId: medicine.id,
-
-            alertType:
-              AlertType.LOW_STOCK,
-
-            severity:
-              Severity.WARNING,
-
-            message: `${medicine.name} stock is below reorder threshold`,
-          },
+            alertType: AlertType.LOW_STOCK,
+            severity: Severity.WARNING,
+            message:
+            `${medicine.name} stock is below reorder threshold`,
+        },
         });
+        const users =
+            await prisma.user.findMany({
+                where: {
+                role: {
+                    in: ["ADMIN", "PHARMACIST"],
+                },
+                },
+        });
+
+        for (const user of users) {
+        await prisma.notification.create({
+            data: {
+            userId: user.id,
+            title: "Low Stock Alert",
+            message: alert.message,
+            type: NotificationType.WARNING,
+            },
+        });
+        }
       }
     }
   };
@@ -169,7 +184,7 @@ export const generateLowStockAlerts =
 
     continue;
     }
-    await prisma.alert.create({
+    const alert = await prisma.alert.create({
         data: {
             medicineId: batch.medicineId,
             batchId: batch.id,
@@ -177,6 +192,30 @@ export const generateLowStockAlerts =
             severity,
             message,
         },
-      });
+        });
+        const users =
+        await prisma.user.findMany({
+            where: {
+            role: {
+                in: ["ADMIN", "PHARMACIST"],
+            },
+            },
+        });
+
+        for (const user of users) {
+        await prisma.notification.create({
+            data: {
+            userId: user.id,
+            title: "Expiry Alert",
+            message: alert.message,
+            type:
+                severity === Severity.CRITICAL
+                ? NotificationType.CRITICAL
+                : severity === Severity.WARNING
+                ? NotificationType.WARNING
+                : NotificationType.INFO,
+            },
+        });
+        }
     }
   };
