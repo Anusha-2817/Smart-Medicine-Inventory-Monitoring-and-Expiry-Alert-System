@@ -8,6 +8,7 @@ import alertRoutes from "./modules/alerts/alerts.routes";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes";
 import notificationRoutes from "./modules/notifications/notification.routes";
 import purchaseOrderRoutes from "./modules/purchase-orders/purchase-order.routes";
+import exportRoutes from "./modules/exports/export.routes";
 const app = express();
 
 app.use(express.json());
@@ -25,4 +26,6 @@ app.use("/api/alerts",alertRoutes);
 app.use("/api/dashboard",dashboardRoutes);
 app.use("/api/notifications",notificationRoutes);
 app.use("/api/purchase-orders",purchaseOrderRoutes);
+app.use("/api/exports",exportRoutes);
+
 export default app;

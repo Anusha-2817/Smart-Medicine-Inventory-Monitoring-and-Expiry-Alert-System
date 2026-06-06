@@ -65,9 +65,10 @@ export const getById = async (req: Request, res: Response) => {
 export const updateStatus = async (req: Request, res: Response) => {
   try {
     const order = await updatePurchaseOrderStatus(
-      req.params.id as string,
-      req.body.status,
-    );
+  req.params.id as string,
+  req.body.status,
+  req.body.batches
+);
 
     res.status(200).json({
       success: true,
