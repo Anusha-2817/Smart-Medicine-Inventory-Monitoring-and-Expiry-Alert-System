@@ -83,13 +83,14 @@ The database uses **PostgreSQL** with UUID primary keys. For details, refer to t
 All requests are prefixed with `/api`. For exact schemas, payload structures, and response samples, refer to the [API Contracts Documentation](docs/api-contracts.md).
 
 *   **Authentication**: `/api/auth/register`, `/api/auth/login`, `/api/auth/profile`
+*   **Users**: `/api/users` (CRUD user accounts, Admin only)
 *   **Medicines**: `/api/medicines` (CRUD)
 *   **Suppliers**: `/api/suppliers` (CRUD)
-*   **Inventory Batches**: `/api/batches` (CRUD, status filtering, and query parameter search)
-*   **Stock Movements**: `/api/stock-movements` (Audit log endpoint)
+*   **Inventory Batches**: `/api/inventory` (CRUD, status filtering, and query parameter search)
+*   **Stock Movements**: `/api/stock-movements` (CRUD and quantity adjustment transaction logging)
 *   **Alerts**: `/api/alerts` (List and resolve notifications)
-*   **Purchase Orders**: `/api/purchase-orders` (CRUD)
-*   **Dashboard & Reports**: `/api/dashboard/summary`, `/api/reports/*`
+*   **Purchase Orders**: `/api/orders` (CRUD)
+*   **Dashboard & Reports**: `/api/dashboard/summary`, `/api/reports/summary` (Category, expiry splits, supplier metrics, and movement sums)
 *   **Imports**: `/api/imports/preview`, `/api/imports/commit`
 *   **Insights**: `/api/insights/*` (Expiry risks, reorder thresholds, inventory health)
 
