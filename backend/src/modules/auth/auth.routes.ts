@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { register, login } from "./auth.controller";
+import { register, login, updateProfile } from "./auth.controller";
 import { authenticate } from "../../middlewares/auth.middleware";
 import { authorize } from "../../middlewares/role.middleware";
 
@@ -17,6 +17,11 @@ router.get(
     });
   }
 );
+router.put(
+  "/profile",
+  authenticate,
+  updateProfile
+);
 router.get(
   "/admin",
   authenticate,
@@ -29,4 +34,3 @@ router.get(
   }
 );
 export default router;
-

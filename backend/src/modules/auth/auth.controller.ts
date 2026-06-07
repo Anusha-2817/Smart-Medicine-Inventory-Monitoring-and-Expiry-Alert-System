@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { registerUser, loginUser } from "./auth.service";
+import { registerUser, loginUser, updateUserProfile } from "./auth.service";
 import { generateToken } from "../../utils/jwt";
 
 export const register = async (
@@ -62,5 +62,28 @@ export const login = async (
       message: error.message,
     });
 
+  }
+};
+
+export const updateProfile = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { name, email, password } = req.body;
+    const userId = (req as any).user.userId;
+
+    const user = await updateUserProfile(userId, name, email, password);
+    const { password_hash, ...safeUser } = user;
+
+    res.status(200).json({
+      success: true,
+      user: safeUser,
+    });
+  } catch (error: any) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
