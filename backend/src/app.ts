@@ -14,6 +14,7 @@ import alertRoutes from "./modules/alert/alert.routes";
 import importExportRoutes from "./modules/import-export/import-export.routes";
 import stockMovementRoutes from "./modules/stock-movement/stock-movement.routes";
 import reportRoutes from "./modules/report/report.routes";
+import userRoutes from "./modules/user/user.routes";
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/alerts", alertRoutes);
 app.use("/api/stock-movements", stockMovementRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api", importExportRoutes);
 
 export default app;
