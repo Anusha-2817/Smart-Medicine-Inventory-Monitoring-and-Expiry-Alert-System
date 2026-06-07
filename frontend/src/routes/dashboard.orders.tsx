@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { Plus } from "lucide-react";
 import { getOrders } from "@/lib/services/orders.service";
+import { PurchaseOrderDialog } from "@/components/app/PurchaseOrderDialog";
 
 export const Route = createFileRoute("/dashboard/orders")({
   head: () => ({ meta: [{ title: "Purchase Orders · MediStock" }] }),
@@ -16,6 +18,7 @@ const statusStyle: Record<string, string> = {
 };
 
 function OrdersPage() {
+  const [dialogOpen, setDialogOpen] = useState(false);
   const { data, isLoading } = useQuery({
     queryKey: ["orders"],
     queryFn: () => getOrders(),
@@ -29,7 +32,10 @@ function OrdersPage() {
           <h1 className="font-serif text-4xl tracking-tight">Purchase Orders</h1>
           <p className="mt-1 text-sm text-muted-foreground">{data?.total ?? 0} orders total</p>
         </div>
-        <button className="inline-flex h-9 items-center gap-2 rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90">
+        <button 
+          onClick={() => setDialogOpen(true)}
+          className="inline-flex h-9 items-center gap-2 rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90"
+        >
           <Plus className="h-4 w-4" /> New Order
         </button>
       </div>
@@ -63,6 +69,7 @@ function OrdersPage() {
           </tbody>
         </table>
       </div>
+      <PurchaseOrderDialog open={dialogOpen} onOpenChange={setDialogOpen} />
     </div>
   );
 }

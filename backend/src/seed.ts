@@ -106,6 +106,79 @@ async function main() {
     }
   }
 
+  // 5. Create sample purchase orders
+  const allSuppliers = await prisma.supplier.findMany();
+  const allMedicines = await prisma.medicine.findMany();
+  const allUsers = await prisma.user.findMany();
+
+  if (allSuppliers.length > 0 && allMedicines.length > 0 && allUsers.length > 0) {
+    const orderCount = await prisma.purchaseOrder.count();
+    if (orderCount === 0) {
+      console.log("🌱 Seeding purchase orders...");
+      const staffUser = allUsers.find(u => u.role === "STAFF") || allUsers[0];
+      const adminUser = allUsers.find(u => u.role === "ADMIN") || allUsers[0];
+
+      // Order 1: Sun Pharma (Ordered)
+      const sunPharma = allSuppliers.find(s => s.name === "Sun Pharma") || allSuppliers[0];
+      const sunMeds = allMedicines.filter(m => m.manufacturer === "Sun Pharma");
+      await prisma.purchaseOrder.create({
+        data: {
+          supplierId: sunPharma.id,
+          createdBy: staffUser.id,
+          status: "ORDERED",
+          items: {
+            create: sunMeds.map(m => ({
+              medicineId: m.id,
+              orderedQuantity: 150,
+              unitPrice: 5.50
+            }))
+          }
+        }
+      });
+
+      // Order 2: Cipla (Received)
+      const cipla = allSuppliers.find(s => s.name === "Cipla Ltd") || allSuppliers[0];
+      const ciplaMeds = allMedicines.filter(m => m.manufacturer === "Cipla");
+      await prisma.purchaseOrder.create({
+        data: {
+          supplierId: cipla.id,
+          createdBy: adminUser.id,
+          status: "RECEIVED",
+          items: {
+            create: ciplaMeds.map(m => ({
+              medicineId: m.id,
+              orderedQuantity: 200,
+              receivedQuantity: 200,
+              unitPrice: 4.80
+            }))
+          }
+        }
+      });
+
+      // Order 3: Dr. Reddy's (Draft)
+      const drReddys = allSuppliers.find(s => s.name === "Dr. Reddy's") || allSuppliers[0];
+      const drReddyMeds = allMedicines.filter(m => m.manufacturer === "Dr. Reddy's");
+      await prisma.purchaseOrder.create({
+        data: {
+          supplierId: drReddys.id,
+          createdBy: staffUser.id,
+          status: "DRAFT",
+          items: {
+            create: drReddyMeds.map(m => ({
+              medicineId: m.id,
+              orderedQuantity: 100,
+              unitPrice: 8.00
+            }))
+          }
+        }
+      });
+
+      console.log("✅ Created demo purchase orders!");
+    } else {
+      console.log("ℹ️  Purchase orders already exist.");
+    }
+  }
+
   console.log("✅ Seed complete!");
 }
 
