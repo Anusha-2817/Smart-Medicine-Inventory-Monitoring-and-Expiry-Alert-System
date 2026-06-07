@@ -1,5 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { getDashboardStats } from "@/lib/services/dashboard.service";
 import { kpis as mockKpis } from "@/lib/mock-dashboard";
 import { KpiCard } from "@/components/app/KpiCard";
@@ -7,6 +8,7 @@ import { StockDistributionChart } from "@/components/app/StockDistributionChart"
 import { ExpiryTrendChart } from "@/components/app/ExpiryTrendChart";
 import { SupplierPieChart } from "@/components/app/SupplierPieChart";
 import { RecentActivity } from "@/components/app/RecentActivity";
+import { StockMovementDialog } from "@/components/app/StockMovementDialog";
 
 export const Route = createFileRoute("/dashboard/")({
   head: () => ({
@@ -26,6 +28,7 @@ const severityLegend = [
 ];
 
 function DashboardPage() {
+  const [movementOpen, setMovementOpen] = useState(false);
   const { data: stats, isLoading } = useQuery({
     queryKey: ["dashboard-stats"],
     queryFn: getDashboardStats,
@@ -54,10 +57,13 @@ function DashboardPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <button className="inline-flex h-9 items-center rounded-full border border-border bg-card px-4 text-sm hover:bg-secondary">
+          <Link to="/dashboard/import-export" className="inline-flex h-9 items-center rounded-full border border-border bg-card px-4 text-sm hover:bg-secondary">
             Export report
-          </button>
-          <button className="inline-flex h-9 items-center rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90">
+          </Link>
+          <button
+            onClick={() => setMovementOpen(true)}
+            className="inline-flex h-9 items-center rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90"
+          >
             New stock movement
           </button>
         </div>
@@ -102,6 +108,7 @@ function DashboardPage() {
           </div>
         </div>
       </div>
+      <StockMovementDialog open={movementOpen} onOpenChange={setMovementOpen} />
     </div>
   );
 }

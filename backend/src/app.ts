@@ -12,6 +12,7 @@ import supplierRoutes from "./modules/supplier/supplier.routes";
 import orderRoutes from "./modules/purchase-order/order.routes";
 import alertRoutes from "./modules/alert/alert.routes";
 import importExportRoutes from "./modules/import-export/import-export.routes";
+import stockMovementRoutes from "./modules/stock-movement/stock-movement.routes";
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/suppliers", supplierRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/alerts", alertRoutes);
+app.use("/api/stock-movements", stockMovementRoutes);
 app.use("/api", importExportRoutes);
 
 export default app;
