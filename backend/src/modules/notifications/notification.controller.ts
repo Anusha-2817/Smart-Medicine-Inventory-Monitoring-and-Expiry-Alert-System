@@ -6,18 +6,11 @@ import {
   markAllAsRead,
 } from "./notification.service";
 
-export const getAll = async (
-  req: Request,
-  res: Response
-) => {
+export const getAll = async (req: Request, res: Response) => {
   try {
-    const userId =
-      (req as any).user.id;
+    const userId = (req as any).user.id;
 
-    const notifications =
-      await getAllNotifications(
-        userId
-      );
+    const notifications = await getAllNotifications(userId);
 
     res.status(200).json({
       success: true,
@@ -31,16 +24,11 @@ export const getAll = async (
   }
 };
 
-export const read = async (
-  req: Request,
-  res: Response
-) => {
+export const read = async (req: Request, res: Response) => {
   try {
-    const id =
-      req.params.id as string;
+    const id = req.params.id as string;
 
-    const notification =
-      await markAsRead(id);
+    const notification = await markAsRead(id);
 
     res.status(200).json({
       success: true,
@@ -54,20 +42,15 @@ export const read = async (
   }
 };
 
-export const readAll = async (
-  req: Request,
-  res: Response
-) => {
+export const readAll = async (req: Request, res: Response) => {
   try {
-    const userId =
-      (req as any).user.id;
+    const userId = (req as any).user.id;
 
     await markAllAsRead(userId);
 
     res.status(200).json({
       success: true,
-      message:
-        "All notifications marked as read",
+      message: "All notifications marked as read",
     });
   } catch (error: any) {
     res.status(500).json({

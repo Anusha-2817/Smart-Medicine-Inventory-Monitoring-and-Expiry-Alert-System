@@ -13,46 +13,29 @@ import { authorize } from "../../middlewares/role.middleware";
 
 const router = Router();
 
-router.get(
-  "/",
-  authenticate,
-  getAll
-);
+router.get("/", authenticate, getAll);
 
-router.get(
-  "/:id",
-  authenticate,
-  getById
-);
+router.get("/:id", authenticate, getById);
 
 router.post(
   "/stock-in",
   authenticate,
-  authorize(
-    "ADMIN",
-    "PHARMACIST"
-  ),
-  stockIn
+  authorize("ADMIN", "PHARMACIST"),
+  stockIn,
 );
 
 router.post(
   "/stock-out",
   authenticate,
-  authorize(
-    "ADMIN",
-    "PHARMACIST"
-  ),
-  stockOut
+  authorize("ADMIN", "PHARMACIST"),
+  stockOut,
 );
 
 router.post(
   "/adjustment",
   authenticate,
-  authorize(
-    "ADMIN",
-    "PHARMACIST"
-  ),
-  adjustment
+  authorize("ADMIN", "PHARMACIST"),
+  adjustment,
 );
 
 export default router;

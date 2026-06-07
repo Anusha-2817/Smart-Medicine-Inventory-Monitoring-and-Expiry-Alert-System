@@ -10,24 +10,17 @@ export const startAlertJobs = () => {
     "0 0 * * *",
     // "*/1 * * * *",
     async () => {
-      console.log(
-        "Running daily alert checks..."
-      );
+      console.log("Running daily alert checks...");
 
       try {
         await generateLowStockAlerts();
 
         await generateExpiryAlerts();
 
-        console.log(
-          "Alert checks completed"
-        );
+        console.log("Alert checks completed");
       } catch (error) {
-        console.error(
-          "Alert job failed:",
-          error
-        );
+        console.error("Alert job failed:", error);
       }
-    }
+    },
   );
 };

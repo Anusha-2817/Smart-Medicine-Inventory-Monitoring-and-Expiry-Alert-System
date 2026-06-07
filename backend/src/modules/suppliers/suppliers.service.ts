@@ -44,7 +44,7 @@ export const updateSupplier = async (
     phone?: string;
     email?: string;
     address?: string;
-  }
+  },
 ) => {
   const supplier = await prisma.supplier.findUnique({
     where: { id },
@@ -77,9 +77,7 @@ export const deleteSupplier = async (id: string) => {
     supplier.inventoryBatches.length > 0 ||
     supplier.purchaseOrders.length > 0
   ) {
-    throw new Error(
-      "Cannot delete supplier with related records"
-    );
+    throw new Error("Cannot delete supplier with related records");
   }
 
   return prisma.supplier.delete({

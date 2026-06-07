@@ -8,53 +8,43 @@ export const recordStockIn = async (
     batchId: string;
     quantity: number;
     notes?: string;
-  }
+  },
 ) => {
-
   if (payload.quantity <= 0) {
-    throw new Error(
-      "Quantity must be greater than 0"
-    );
+    throw new Error("Quantity must be greater than 0");
   }
 
-  return prisma.$transaction(
-  async (tx: Prisma.TransactionClient) => {
-
-    const batch =
-      await tx.inventoryBatch.findUnique({
-        where: {
-          id: payload.batchId,
-        },
-      });
+  return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const batch = await tx.inventoryBatch.findUnique({
+      where: {
+        id: payload.batchId,
+      },
+    });
 
     if (!batch) {
-      throw new Error(
-        "Inventory batch not found"
-      );
+      throw new Error("Inventory batch not found");
     }
 
-    const updatedBatch =
-      await tx.inventoryBatch.update({
-        where: {
-          id: payload.batchId,
+    const updatedBatch = await tx.inventoryBatch.update({
+      where: {
+        id: payload.batchId,
+      },
+      data: {
+        quantity: {
+          increment: payload.quantity,
         },
-        data: {
-          quantity: {
-            increment: payload.quantity,
-          },
-        },
-      });
+      },
+    });
 
-    const movement =
-      await tx.stockMovement.create({
-        data: {
-          batchId: payload.batchId,
-          userId,
-          movementType: MovementType.STOCK_IN,
-          quantity: payload.quantity,
-          notes: payload.notes,
-        },
-      });
+    const movement = await tx.stockMovement.create({
+      data: {
+        batchId: payload.batchId,
+        userId,
+        movementType: MovementType.STOCK_IN,
+        quantity: payload.quantity,
+        notes: payload.notes,
+      },
+    });
 
     return {
       updatedBatch,
@@ -69,59 +59,49 @@ export const recordStockOut = async (
     batchId: string;
     quantity: number;
     notes?: string;
-  }
+  },
 ) => {
-
   if (payload.quantity <= 0) {
-    throw new Error(
-      "Quantity must be greater than 0"
-    );
+    throw new Error("Quantity must be greater than 0");
   }
 
-  return prisma.$transaction(
-  async (tx: Prisma.TransactionClient) => {
-
-    const batch =
-      await tx.inventoryBatch.findUnique({
-        where: {
-          id: payload.batchId,
-        },
-      });
+  return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const batch = await tx.inventoryBatch.findUnique({
+      where: {
+        id: payload.batchId,
+      },
+    });
 
     if (!batch) {
-      throw new Error(
-        "Inventory batch not found"
-      );
+      throw new Error("Inventory batch not found");
     }
 
     if (batch.quantity < payload.quantity) {
       throw new Error(
-        `Insufficient stock. Available: ${batch.quantity}, Requested: ${payload.quantity}`
+        `Insufficient stock. Available: ${batch.quantity}, Requested: ${payload.quantity}`,
       );
     }
 
-    const updatedBatch =
-      await tx.inventoryBatch.update({
-        where: {
-          id: payload.batchId,
+    const updatedBatch = await tx.inventoryBatch.update({
+      where: {
+        id: payload.batchId,
+      },
+      data: {
+        quantity: {
+          decrement: payload.quantity,
         },
-        data: {
-          quantity: {
-            decrement: payload.quantity,
-          },
-        },
-      });
+      },
+    });
 
-    const movement =
-      await tx.stockMovement.create({
-        data: {
-          batchId: payload.batchId,
-          userId,
-          movementType: MovementType.STOCK_OUT,
-          quantity: payload.quantity,
-          notes: payload.notes,
-        },
-      });
+    const movement = await tx.stockMovement.create({
+      data: {
+        batchId: payload.batchId,
+        userId,
+        movementType: MovementType.STOCK_OUT,
+        quantity: payload.quantity,
+        notes: payload.notes,
+      },
+    });
 
     return {
       updatedBatch,
@@ -136,60 +116,47 @@ export const recordAdjustment = async (
     batchId: string;
     quantity: number;
     notes?: string;
-  }
+  },
 ) => {
-
   if (payload.quantity === 0) {
-    throw new Error(
-      "Adjustment quantity cannot be 0"
-    );
+    throw new Error("Adjustment quantity cannot be 0");
   }
 
-  return prisma.$transaction(
-  async (tx: Prisma.TransactionClient) => {
-
-    const batch =
-      await tx.inventoryBatch.findUnique({
-        where: {
-          id: payload.batchId,
-        },
-      });
+  return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const batch = await tx.inventoryBatch.findUnique({
+      where: {
+        id: payload.batchId,
+      },
+    });
 
     if (!batch) {
-      throw new Error(
-        "Inventory batch not found"
-      );
+      throw new Error("Inventory batch not found");
     }
 
-    const newQuantity =
-      batch.quantity + payload.quantity;
+    const newQuantity = batch.quantity + payload.quantity;
 
     if (newQuantity < 0) {
-      throw new Error(
-        "Adjustment would result in negative stock"
-      );
+      throw new Error("Adjustment would result in negative stock");
     }
 
-    const updatedBatch =
-      await tx.inventoryBatch.update({
-        where: {
-          id: payload.batchId,
-        },
-        data: {
-          quantity: newQuantity,
-        },
-      });
+    const updatedBatch = await tx.inventoryBatch.update({
+      where: {
+        id: payload.batchId,
+      },
+      data: {
+        quantity: newQuantity,
+      },
+    });
 
-    const movement =
-      await tx.stockMovement.create({
-        data: {
-          batchId: payload.batchId,
-          userId,
-          movementType: MovementType.ADJUSTMENT,
-          quantity: payload.quantity,
-          notes: payload.notes,
-        },
-      });
+    const movement = await tx.stockMovement.create({
+      data: {
+        batchId: payload.batchId,
+        userId,
+        movementType: MovementType.ADJUSTMENT,
+        quantity: payload.quantity,
+        notes: payload.notes,
+      },
+    });
 
     return {
       updatedBatch,
@@ -225,38 +192,32 @@ export const getAllStockMovements = async () => {
   });
 };
 
-export const getStockMovementById = async (
-  id: string
-) => {
-
-  const movement =
-    await prisma.stockMovement.findUnique({
-      where: { id },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            role: true,
-          },
+export const getStockMovementById = async (id: string) => {
+  const movement = await prisma.stockMovement.findUnique({
+    where: { id },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          role: true,
         },
-        batch: {
-          include: {
-            medicine: {
-              select: {
-                id: true,
-                name: true,
-              },
+      },
+      batch: {
+        include: {
+          medicine: {
+            select: {
+              id: true,
+              name: true,
             },
           },
         },
       },
-    });
+    },
+  });
 
   if (!movement) {
-    throw new Error(
-      "Stock movement not found"
-    );
+    throw new Error("Stock movement not found");
   }
 
   return movement;

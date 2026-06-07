@@ -7,13 +7,9 @@ import {
   generateExpiryAlerts,
 } from "./alerts.service";
 
-export const getAll = async (
-  req: Request,
-  res: Response
-) => {
+export const getAll = async (req: Request, res: Response) => {
   try {
-    const alerts =
-      await getAllAlerts();
+    const alerts = await getAllAlerts();
 
     res.status(200).json({
       success: true,
@@ -27,15 +23,11 @@ export const getAll = async (
   }
 };
 
-export const resolve = async (
-  req: Request,
-  res: Response
-) => {
+export const resolve = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
 
-    const alert =
-      await resolveAlert(id);
+    const alert = await resolveAlert(id);
 
     res.status(200).json({
       success: true,
@@ -49,44 +41,34 @@ export const resolve = async (
   }
 };
 
-export const generateLowStock =
-  async (
-    req: Request,
-    res: Response
-  ) => {
-    try {
-      await generateLowStockAlerts();
+export const generateLowStock = async (req: Request, res: Response) => {
+  try {
+    await generateLowStockAlerts();
 
-      res.status(200).json({
-        success: true,
-        message:
-          "Low stock alerts generated successfully",
-      });
-    } catch (error: any) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  };
+    res.status(200).json({
+      success: true,
+      message: "Low stock alerts generated successfully",
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
-  export const generateExpiry =
-  async (
-    req: Request,
-    res: Response
-  ) => {
-    try {
-      await generateExpiryAlerts();
+export const generateExpiry = async (req: Request, res: Response) => {
+  try {
+    await generateExpiryAlerts();
 
-      res.status(200).json({
-        success: true,
-        message:
-          "Expiry alerts generated successfully",
-      });
-    } catch (error: any) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  };
+    res.status(200).json({
+      success: true,
+      message: "Expiry alerts generated successfully",
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

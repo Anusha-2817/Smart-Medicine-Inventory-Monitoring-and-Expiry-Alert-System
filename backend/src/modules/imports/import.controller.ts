@@ -2,10 +2,7 @@ import { Request, Response } from "express";
 
 import { importMedicinesFromFile } from "./import.service";
 
-export const importMedicines = async (
-  req: Request,
-  res: Response
-) => {
+export const importMedicines = async (req: Request, res: Response) => {
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -14,10 +11,7 @@ export const importMedicines = async (
       });
     }
 
-    const result =
-      await importMedicinesFromFile(
-        req.file.buffer
-      );
+    const result = await importMedicinesFromFile(req.file.buffer);
 
     return res.status(200).json({
       success: true,

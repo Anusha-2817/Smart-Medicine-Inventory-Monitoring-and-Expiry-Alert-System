@@ -8,10 +8,7 @@ import {
   deleteSupplier,
 } from "./suppliers.service";
 
-export const create = async (
-  req: Request,
-  res: Response
-) => {
+export const create = async (req: Request, res: Response) => {
   try {
     const supplier = await createSupplier(req.body);
 
@@ -27,10 +24,7 @@ export const create = async (
   }
 };
 
-export const getAll = async (
-  req: Request,
-  res: Response
-) => {
+export const getAll = async (req: Request, res: Response) => {
   try {
     const suppliers = await getAllSuppliers();
 
@@ -46,10 +40,7 @@ export const getAll = async (
   }
 };
 
-export const getById = async (
-  req: Request,
-  res: Response
-) => {
+export const getById = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
 
@@ -67,17 +58,11 @@ export const getById = async (
   }
 };
 
-export const update = async (
-  req: Request,
-  res: Response
-) => {
+export const update = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
 
-    const supplier = await updateSupplier(
-      id,
-      req.body
-    );
+    const supplier = await updateSupplier(id, req.body);
 
     res.status(200).json({
       success: true,
@@ -91,10 +76,7 @@ export const update = async (
   }
 };
 
-export const remove = async (
-  req: Request,
-  res: Response
-) => {
+export const remove = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
 

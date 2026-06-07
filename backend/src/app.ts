@@ -22,14 +22,15 @@ app.get("/", (_req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/medicines", medicineRoutes);
 app.use("/api/suppliers", supplierRoutes);
-app.use("/api/inventory-batches",inventoryRoutes);
-app.use("/api/stock-movements",stockMovementRoutes);
-app.use("/api/alerts",alertRoutes);
-app.use("/api/dashboard",dashboardRoutes);
-app.use("/api/notifications",notificationRoutes);
-app.use("/api/purchase-orders",purchaseOrderRoutes);
-app.use("/api/exports",exportRoutes);
+app.use("/api/inventory-batches", inventoryRoutes);
+app.use("/api/stock-movements", stockMovementRoutes);
+app.use("/api/alerts", alertRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/purchase-orders", purchaseOrderRoutes);
+app.use("/api/exports", exportRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/medicines", medicineRoutes);
-app.use("/api/imports",importRoutes);
+app.use("/api/imports", importRoutes);
+
 export default app;

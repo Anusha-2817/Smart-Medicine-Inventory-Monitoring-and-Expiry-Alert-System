@@ -8,11 +8,6 @@ import { importMedicines } from "./import.controller";
 
 const router = Router();
 
-router.post(
-  "/medicines",
-  authenticate,
-  upload.single("file"),
-  importMedicines
-);
+router.post("/medicines", authenticate, upload.single("file"), importMedicines);
 
 export default router;

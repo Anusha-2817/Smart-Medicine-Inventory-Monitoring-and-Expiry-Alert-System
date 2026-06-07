@@ -8,10 +8,7 @@ import {
   deleteMedicine,
 } from "./medicine.service";
 
-export const create = async (
-  req: Request,
-  res: Response
-) => {
+export const create = async (req: Request, res: Response) => {
   try {
     const medicine = await createMedicine(req.body);
 
@@ -27,10 +24,7 @@ export const create = async (
   }
 };
 
-export const getAll = async (
-  req: Request,
-  res: Response
-) => {
+export const getAll = async (req: Request, res: Response) => {
   try {
     const medicines = await getAllMedicines();
 
@@ -46,10 +40,7 @@ export const getAll = async (
   }
 };
 
-export const getById = async (
-  req: Request,
-  res: Response
-) => {
+export const getById = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
 
@@ -67,17 +58,12 @@ export const getById = async (
   }
 };
 
-export const update = async (
-  req: Request,
-  res: Response
-) => {
-  try { // console.log("UPDATE BODY:", req.body);
+export const update = async (req: Request, res: Response) => {
+  try {
+    // console.log("UPDATE BODY:", req.body);
     const id = req.params.id as string;
 
-    const medicine = await updateMedicine(
-      id,
-      req.body
-    );
+    const medicine = await updateMedicine(id, req.body);
 
     res.status(200).json({
       success: true,
@@ -91,15 +77,12 @@ export const update = async (
   }
 };
 
-export const remove = async (
-  req: Request,
-  res: Response
-) => {
+export const remove = async (req: Request, res: Response) => {
   console.log("UPDATE BODY:", req.body);
   try {
     const id = req.params.id as string;
     console.log("UPDATE ID:", req.params.id);
-    console.log("UPDATE BODY:", req.body); 
+    console.log("UPDATE BODY:", req.body);
 
     await deleteMedicine(id);
 

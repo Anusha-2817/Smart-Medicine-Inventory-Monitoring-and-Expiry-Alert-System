@@ -1,8 +1,6 @@
 import { prisma } from "../../config/prisma";
 
-export const getAllNotifications = async (
-  userId: string
-) => {
+export const getAllNotifications = async (userId: string) => {
   return prisma.notification.findMany({
     where: {
       userId,
@@ -13,18 +11,13 @@ export const getAllNotifications = async (
   });
 };
 
-export const markAsRead = async (
-  id: string
-) => {
-  const notification =
-    await prisma.notification.findUnique({
-      where: { id },
-    });
+export const markAsRead = async (id: string) => {
+  const notification = await prisma.notification.findUnique({
+    where: { id },
+  });
 
   if (!notification) {
-    throw new Error(
-      "Notification not found"
-    );
+    throw new Error("Notification not found");
   }
 
   return prisma.notification.update({
@@ -35,9 +28,7 @@ export const markAsRead = async (
   });
 };
 
-export const markAllAsRead = async (
-  userId: string
-) => {
+export const markAllAsRead = async (userId: string) => {
   return prisma.notification.updateMany({
     where: {
       userId,

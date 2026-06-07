@@ -12,36 +12,17 @@ import { authorize } from "../../middlewares/role.middleware";
 
 const router = Router();
 
-router.get(
-  "/",
-  authenticate,
-  getAll
-);
+router.get("/", authenticate, getAll);
 
-router.get(
-  "/:id",
-  authenticate,
-  getById
-);
+router.get("/:id", authenticate, getById);
 
-router.post(
-  "/",
-  authenticate,
-  authorize(
-    "ADMIN",
-    "PHARMACIST"
-  ),
-  create
-);
+router.post("/", authenticate, authorize("ADMIN", "PHARMACIST"), create);
 
 router.patch(
   "/:id/status",
   authenticate,
-  authorize(
-    "ADMIN",
-    "PHARMACIST"
-  ),
-  updateStatus
+  authorize("ADMIN", "PHARMACIST"),
+  updateStatus,
 );
 
 export default router;

@@ -1,31 +1,15 @@
 import { Router } from "express";
 
-import {
-  getAll,
-  read,
-  readAll,
-} from "./notification.controller";
+import { getAll, read, readAll } from "./notification.controller";
 
 import { authenticate } from "../../middlewares/auth.middleware";
 
 const router = Router();
 
-router.get(
-  "/",
-  authenticate,
-  getAll
-);
+router.get("/", authenticate, getAll);
 
-router.patch(
-  "/:id/read",
-  authenticate,
-  read
-);
+router.patch("/:id/read", authenticate, read);
 
-router.patch(
-  "/read-all",
-  authenticate,
-  readAll
-);
+router.patch("/read-all", authenticate, readAll);
 
 export default router;

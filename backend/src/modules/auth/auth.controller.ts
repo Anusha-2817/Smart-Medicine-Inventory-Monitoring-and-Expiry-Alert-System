@@ -2,18 +2,11 @@ import { Request, Response } from "express";
 import { registerUser, loginUser } from "./auth.service";
 import { generateToken } from "../../utils/jwt";
 
-export const register = async (
-  req: Request,
-  res: Response
-) => {
+export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
 
-    const user = await registerUser(
-      name,
-      email,
-      password
-    );
+    const user = await registerUser(name, email, password);
 
     const { password_hash, ...safeUser } = user;
 
@@ -21,7 +14,6 @@ export const register = async (
       success: true,
       user: safeUser,
     });
-
   } catch (error: any) {
     res.status(400).json({
       success: false,
@@ -30,22 +22,12 @@ export const register = async (
   }
 };
 
-export const login = async (
-  req: Request,
-  res: Response
-) => {
+export const login = async (req: Request, res: Response) => {
   try {
-
     const { email, password } = req.body;
 
-    const user = await loginUser(
-      email,
-      password
-    );
-    const token = generateToken(
-    user.id,
-    user.role
-    );
+    const user = await loginUser(email, password);
+    const token = generateToken(user.id, user.role);
 
     const { password_hash, ...safeUser } = user;
 
@@ -54,13 +36,10 @@ export const login = async (
       token,
       user: safeUser,
     });
-
   } catch (error: any) {
-
     res.status(401).json({
       success: false,
       message: error.message,
     });
-
   }
 };

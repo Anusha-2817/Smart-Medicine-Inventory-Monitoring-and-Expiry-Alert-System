@@ -2,17 +2,13 @@ import { BatchStatus, AlertType, Severity } from "@prisma/client";
 import { prisma } from "../../config/prisma";
 
 export const getSummary = async () => {
-  const [
-    totalMedicines,
-    totalSuppliers,
-    totalBatches,
-    totalAlerts,
-  ] = await Promise.all([
-    prisma.medicine.count(),
-    prisma.supplier.count(),
-    prisma.inventoryBatch.count(),
-    prisma.alert.count(),
-  ]);
+  const [totalMedicines, totalSuppliers, totalBatches, totalAlerts] =
+    await Promise.all([
+      prisma.medicine.count(),
+      prisma.supplier.count(),
+      prisma.inventoryBatch.count(),
+      prisma.alert.count(),
+    ]);
 
   return {
     totalMedicines,
@@ -23,11 +19,7 @@ export const getSummary = async () => {
 };
 
 export const getAlertStats = async () => {
-  const [
-    lowStock,
-    expiry,
-    critical,
-  ] = await Promise.all([
+  const [lowStock, expiry, critical] = await Promise.all([
     prisma.alert.count({
       where: {
         alertType: AlertType.LOW_STOCK,
@@ -58,11 +50,7 @@ export const getAlertStats = async () => {
 };
 
 export const getInventoryStats = async () => {
-  const [
-    activeBatches,
-    expiredBatches,
-    batches,
-  ] = await Promise.all([
+  const [activeBatches, expiredBatches, batches] = await Promise.all([
     prisma.inventoryBatch.count({
       where: {
         status: BatchStatus.ACTIVE,
@@ -82,10 +70,7 @@ export const getInventoryStats = async () => {
     }),
   ]);
 
-  const totalUnits = batches.reduce(
-    (sum, batch) => sum + batch.quantity,
-    0
-  );
+  const totalUnits = batches.reduce((sum, batch) => sum + batch.quantity, 0);
 
   return {
     activeBatches,

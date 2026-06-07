@@ -6,10 +6,7 @@ import {
   getInventoryStats,
 } from "./dashboard.service";
 
-export const summary = async (
-  req: Request,
-  res: Response
-) => {
+export const summary = async (req: Request, res: Response) => {
   try {
     const data = await getSummary();
 
@@ -25,10 +22,7 @@ export const summary = async (
   }
 };
 
-export const alerts = async (
-  req: Request,
-  res: Response
-) => {
+export const alerts = async (req: Request, res: Response) => {
   try {
     const data = await getAlertStats();
 
@@ -44,13 +38,9 @@ export const alerts = async (
   }
 };
 
-export const inventory = async (
-  req: Request,
-  res: Response
-) => {
+export const inventory = async (req: Request, res: Response) => {
   try {
-    const data =
-      await getInventoryStats();
+    const data = await getInventoryStats();
 
     res.status(200).json({
       success: true,
