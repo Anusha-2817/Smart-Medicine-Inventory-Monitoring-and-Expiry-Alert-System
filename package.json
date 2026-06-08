@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "description": "Smart Medicine Inventory Monitoring and Expiry Alert System",
   "scripts": {
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "migrate": "cd backend && npx prisma migrate deploy",
+    "seed": "cd backend && npm run seed",
+    "setup": "npm run install:all && npm run migrate && npm run seed",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
     "start": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd backend && npm run dev",
-    "client": "cd frontend && npm run dev",
-    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+    "client": "cd frontend && npm run dev"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
