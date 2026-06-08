@@ -92,6 +92,7 @@ All requests are prefixed with `/api`. For exact schemas, payload structures, an
 *   **Purchase Orders**: `/api/orders` (CRUD)
 *   **Dashboard & Reports**: `/api/dashboard/summary`, `/api/reports/summary` (Category, expiry splits, supplier metrics, and movement sums)
 *   **Imports**: `/api/imports/preview`, `/api/imports/commit`
+*   **Demo Control**: `/api/demo/generate` (Admin-only dataset generation/reset)
 *   **Insights**: `/api/insights/*` (Expiry risks, reorder thresholds, inventory health)
 
 ---
@@ -138,6 +139,15 @@ npm start
 ```
 *   **Frontend client** runs on `http://localhost:3000` (or the port specified by Vite/TanStack Start).
 *   **Backend server** runs on `http://localhost:5000` (or configured API port).
+
+### 5. Realistic Demo Data Generation
+If you want to quickly generate a rich, realistic pharmacy dataset (125+ medicines, 20+ suppliers, 400+ batches, 1200+ stock movements, and purchase orders) for demo/testing purposes:
+1. Log in as an **Admin** user.
+2. Go to **Settings** from the sidebar.
+3. Find the **Demo Dataset Generator** panel.
+4. Click **Regenerate Demo Data**. This will clean the database and populate it with fully realistic, chronological seed data.
+
+---
 
 ---
 
