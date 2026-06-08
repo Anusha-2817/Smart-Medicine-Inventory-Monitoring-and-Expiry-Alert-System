@@ -42,14 +42,28 @@ Thumbs.db
 # Testing and Coverage
 coverage/
 
-# Backend Specific
+# Backend and DB Specific
 **/__pycache__/
 **/*.pyc
 venv/
 .venv/
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
 prisma/dev.db
 backend/prisma/dev.db
 uploads/
 temp/
-*reports/
-*report*.*
+reports/
+
+# Document / Export Files
+*.pdf
+*.xlsx
+*.csv
+
+# Additional OS Files
+desktop.ini
+ehthumbs.db
