@@ -1,15 +1,160 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
+model User {
+  id             String          @id @default(uuid()) @db.Uuid
+  name           String
+  email          String          @unique
+  password_hash  String          @map("password_hash")
+  role           Role            @default(STAFF)
+  isActive       Boolean         @default(true) @map("is_active")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+  notifications  Notification[]
+  purchaseOrders PurchaseOrder[]
+  stockMovements StockMovement[]
+
+  @@map("users")
 }
 
-//
-// ENUMS
-//
+model Supplier {
+  id               String           @id @default(uuid()) @db.Uuid
+  name             String
+  contactPerson    String?          @map("contact_person")
+  phone            String?
+  email            String?
+  address          String?
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  inventoryBatches InventoryBatch[]
+  purchaseOrders   PurchaseOrder[]
+
+  @@map("suppliers")
+}
+
+model Medicine {
+  id                   String              @id @default(uuid()) @db.Uuid
+  name                 String
+  genericName          String?             @map("generic_name")
+  category             String?
+  manufacturer         String?
+  sku                  String              @unique
+  requiresPrescription Boolean             @default(false) @map("requires_prescription")
+  reorderThreshold     Int                 @default(50) @map("reorder_threshold")
+  status               MedicineStatus      @default(ACTIVE)
+  createdAt            DateTime            @default(now()) @map("created_at")
+  updatedAt            DateTime            @updatedAt @map("updated_at")
+  inventoryBatches     InventoryBatch[]
+  purchaseOrderItems   PurchaseOrderItem[]
+
+  @@map("medicines")
+}
+
+model InventoryBatch {
+  id                String          @id @default(uuid()) @db.Uuid
+  medicineId        String          @map("medicine_id") @db.Uuid
+  supplierId        String          @map("supplier_id") @db.Uuid
+  batchNumber       String          @map("batch_number")
+  quantity          Int             @default(0)
+  unitCost          Decimal         @map("unit_cost") @db.Decimal(10, 2)
+  manufacturingDate DateTime?       @map("manufacturing_date")
+  expiryDate        DateTime        @map("expiry_date")
+  status            BatchStatus     @default(ACTIVE)
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+  alerts            Alert[]
+  medicine          Medicine        @relation(fields: [medicineId], references: [id], onDelete: Cascade)
+  supplier          Supplier        @relation(fields: [supplierId], references: [id])
+  stockMovements    StockMovement[]
+
+  @@unique([medicineId, batchNumber])
+  @@index([expiryDate])
+  @@index([status])
+  @@index([medicineId])
+  @@index([supplierId])
+  @@map("inventory_batches")
+}
+
+model StockMovement {
+  id           String         @id @default(uuid()) @db.Uuid
+  batchId      String         @map("batch_id") @db.Uuid
+  userId       String         @map("user_id") @db.Uuid
+  movementType MovementType   @map("movement_type")
+  quantity     Int
+  notes        String?
+  createdAt    DateTime       @default(now()) @map("created_at")
+  batch        InventoryBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  user         User           @relation(fields: [userId], references: [id])
+
+  @@index([batchId])
+  @@index([createdAt])
+  @@map("stock_movements")
+}
+
+model Alert {
+  id         String         @id @default(uuid()) @db.Uuid
+  batchId    String         @map("batch_id") @db.Uuid
+  alertType  AlertType      @map("alert_type")
+  severity   Severity
+  message    String
+  isResolved Boolean        @default(false) @map("is_resolved")
+  resolvedAt DateTime?      @map("resolved_at")
+  createdAt  DateTime       @default(now()) @map("created_at")
+  updatedAt  DateTime       @updatedAt @map("updated_at")
+  batch      InventoryBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  @@index([isResolved])
+  @@index([severity])
+  @@map("alerts")
+}
+
+model PurchaseOrder {
+  id         String              @id @default(uuid()) @db.Uuid
+  supplierId String              @map("supplier_id") @db.Uuid
+  status     OrderStatus         @default(DRAFT)
+  createdBy  String              @map("created_by") @db.Uuid
+  createdAt  DateTime            @default(now()) @map("created_at")
+  updatedAt  DateTime            @updatedAt @map("updated_at")
+  items      PurchaseOrderItem[]
+  user       User                @relation(fields: [createdBy], references: [id])
+  supplier   Supplier            @relation(fields: [supplierId], references: [id])
+
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderItem {
+  id               String        @id @default(uuid()) @db.Uuid
+  purchaseOrderId  String        @map("purchase_order_id") @db.Uuid
+  medicineId       String        @map("medicine_id") @db.Uuid
+  orderedQuantity  Int           @map("ordered_quantity")
+  receivedQuantity Int           @default(0) @map("received_quantity")
+  unitPrice        Decimal       @map("unit_price") @db.Decimal(10, 2)
+  medicine         Medicine      @relation(fields: [medicineId], references: [id], onDelete: Cascade)
+  purchaseOrder    PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+
+  @@map("purchase_order_items")
+}
+
+model Notification {
+  id        String           @id @default(uuid()) @db.Uuid
+  userId    String           @map("user_id") @db.Uuid
+  title     String
+  message   String
+  type      NotificationType
+  isRead    Boolean          @default(false) @map("is_read")
+  createdAt DateTime         @default(now()) @map("created_at")
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@map("notifications")
+}
 
 enum Role {
   ADMIN
@@ -58,251 +203,4 @@ enum NotificationType {
   INFO
   WARNING
   CRITICAL
-}
-
-//
-// USER
-//
-
-model User {
-  id            String @id @default(uuid()) @db.Uuid
-  name          String
-  email         String @unique
-  password_hash String @map("password_hash")
-
-  role Role @default(STAFF)
-
-  isActive Boolean @default(true) @map("is_active")
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  stockMovements StockMovement[]
-  purchaseOrders PurchaseOrder[]
-  notifications  Notification[]
-
-  @@map("users")
-}
-
-//
-// SUPPLIER
-//
-
-model Supplier {
-  id String @id @default(uuid()) @db.Uuid
-
-  name String
-
-  contactPerson String? @map("contact_person")
-  phone         String?
-  email         String?
-  address       String?
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  inventoryBatches InventoryBatch[]
-  purchaseOrders   PurchaseOrder[]
-
-  @@map("suppliers")
-}
-
-//
-// MEDICINE
-//
-
-model Medicine {
-  id String @id @default(uuid()) @db.Uuid
-
-  name         String
-  genericName  String? @map("generic_name")
-  category     String?
-  manufacturer String?
-
-  sku String @unique
-
-  requiresPrescription Boolean @default(false) @map("requires_prescription")
-
-  reorderThreshold Int @default(50) @map("reorder_threshold")
-
-  status MedicineStatus @default(ACTIVE)
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  inventoryBatches   InventoryBatch[]
-  purchaseOrderItems PurchaseOrderItem[]
-
-  @@map("medicines")
-}
-
-//
-// INVENTORY BATCH
-//
-
-model InventoryBatch {
-  id String @id @default(uuid()) @db.Uuid
-
-  medicineId String @map("medicine_id") @db.Uuid
-  supplierId String @map("supplier_id") @db.Uuid
-
-  batchNumber String @map("batch_number")
-
-  quantity Int @default(0)
-
-  unitCost Decimal @map("unit_cost") @db.Decimal(10, 2)
-
-  manufacturingDate DateTime? @map("manufacturing_date")
-
-  expiryDate DateTime @map("expiry_date")
-
-  status BatchStatus @default(ACTIVE)
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  medicine Medicine @relation(fields: [medicineId], references: [id], onDelete: Cascade)
-
-  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Restrict)
-
-  stockMovements StockMovement[]
-  alerts         Alert[]
-
-  @@unique([medicineId, batchNumber])
-  @@index([expiryDate])
-  @@index([status])
-  @@index([medicineId])
-  @@index([supplierId])
-  @@map("inventory_batches")
-}
-
-//
-// STOCK MOVEMENT
-//
-
-model StockMovement {
-  id String @id @default(uuid()) @db.Uuid
-
-  batchId String @map("batch_id") @db.Uuid
-  userId  String @map("user_id") @db.Uuid
-
-  movementType MovementType @map("movement_type")
-
-  quantity Int
-
-  notes String?
-
-  createdAt DateTime @default(now()) @map("created_at")
-
-  batch InventoryBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
-
-  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
-
-  @@index([batchId])
-  @@index([createdAt])
-  @@map("stock_movements")
-}
-
-//
-// ALERT
-//
-
-model Alert {
-  id String @id @default(uuid()) @db.Uuid
-
-  batchId String @map("batch_id") @db.Uuid
-
-  alertType AlertType @map("alert_type")
-
-  severity Severity
-
-  message String
-
-  isResolved Boolean @default(false) @map("is_resolved")
-
-  resolvedAt DateTime? @map("resolved_at")
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  batch InventoryBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
-
-  @@index([isResolved])
-  @@index([severity])
-  @@map("alerts")
-}
-
-//
-// PURCHASE ORDER
-//
-
-model PurchaseOrder {
-  id String @id @default(uuid()) @db.Uuid
-
-  supplierId String @map("supplier_id") @db.Uuid
-
-  status OrderStatus @default(DRAFT)
-
-  createdBy String @map("created_by") @db.Uuid
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Restrict)
-
-  user User @relation(fields: [createdBy], references: [id], onDelete: Restrict)
-
-  items PurchaseOrderItem[]
-
-  @@map("purchase_orders")
-}
-
-//
-// PURCHASE ORDER ITEM
-//
-
-model PurchaseOrderItem {
-  id String @id @default(uuid()) @db.Uuid
-
-  purchaseOrderId String @map("purchase_order_id") @db.Uuid
-
-  medicineId String @map("medicine_id") @db.Uuid
-
-  orderedQuantity Int @map("ordered_quantity")
-
-  receivedQuantity Int @default(0) @map("received_quantity")
-
-  unitPrice Decimal @map("unit_price") @db.Decimal(10, 2)
-
-  purchaseOrder PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
-
-  medicine Medicine @relation(fields: [medicineId], references: [id], onDelete: Cascade)
-
-  @@map("purchase_order_items")
-}
-
-//
-// NOTIFICATION
-//
-
-model Notification {
-  id String @id @default(uuid()) @db.Uuid
-
-  userId String @map("user_id") @db.Uuid
-
-  title String
-
-  message String
-
-  type NotificationType
-
-  isRead Boolean @default(false) @map("is_read")
-
-  createdAt DateTime @default(now()) @map("created_at")
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([isRead])
-  @@map("notifications")
 }
