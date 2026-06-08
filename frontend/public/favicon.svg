@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Rounded dark navy blue square background matching primary color -->
+  <rect width="32" height="32" rx="9" fill="#0d1f2d" />
+  <!-- Capsule / Pill outline in white -->
+  <g transform="translate(4, 4)" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/>
+    <path d="m8.5 8.5 7 7"/>
+  </g>
+</svg>
