@@ -19,8 +19,26 @@ model User {
   notifications  Notification[]
   purchaseOrders PurchaseOrder[]
   stockMovements StockMovement[]
+  importHistory  ImportHistory[]
 
   @@map("users")
+}
+
+model ImportHistory {
+  id            String   @id @default(uuid()) @db.Uuid
+  importType    String   @map("import_type")
+  fileName      String   @map("file_name")
+  uploadedBy    String   @map("uploaded_by") @db.Uuid
+  uploadedCount Int      @map("uploaded_count")
+  successCount  Int      @map("success_count")
+  failedCount   Int      @map("failed_count")
+  errors        Json?    @default("[]")
+  createdAt     DateTime @default(now()) @map("created_at")
+  user          User     @relation(fields: [uploadedBy], references: [id])
+
+  @@index([uploadedBy])
+  @@index([importType])
+  @@map("import_history")
 }
 
 model Supplier {
