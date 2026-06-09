@@ -112,7 +112,7 @@ export const importMedicines = async (req: Request, res: Response) => {
       successCount = result.count;
     }
 
-    const userId = (req as any).user?.id;
+    const userId = (req as any).user?.userId;
     if (userId) {
       await prisma.importHistory.create({
         data: {
@@ -189,7 +189,7 @@ export const importInventory = async (req: Request, res: Response) => {
       successCount = result.count;
     }
 
-    const userId = (req as any).user?.id;
+    const userId = (req as any).user?.userId;
     if (userId) {
       await prisma.importHistory.create({
         data: {
@@ -247,7 +247,7 @@ export const importSuppliers = async (req: Request, res: Response) => {
       successCount = result.count;
     }
 
-    const userId = (req as any).user?.id;
+    const userId = (req as any).user?.userId;
     if (userId) {
       await prisma.importHistory.create({
         data: {

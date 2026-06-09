@@ -88,6 +88,7 @@ export function ImportCard({ title, description, icon, color, onUpload, onSucces
         onSuccess?.();
       } else {
         toast.error(`${title}: All ${res.failed} rows failed validation`);
+        onSuccess?.();
       }
     } catch (err: any) {
       setPhase("error");
