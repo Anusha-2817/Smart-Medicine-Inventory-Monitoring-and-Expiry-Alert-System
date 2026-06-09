@@ -11,7 +11,7 @@ export function parseFile(filePath: string): {
   rows: Record<string, string>[];
 } {
   const fileBuffer = fs.readFileSync(filePath);
-  const workbook = XLSX.read(fileBuffer, { type: "buffer", raw: false });
+  const workbook = XLSX.read(fileBuffer, { type: "buffer", cellDates: true });
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
   const data: string[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
 

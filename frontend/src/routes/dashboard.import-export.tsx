@@ -122,7 +122,10 @@ function ImportExportPage() {
             icon={<Pill className="h-5 w-5" />}
             color="bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300"
             onUpload={importMedicines}
-            onSuccess={() => qc.invalidateQueries({ queryKey: ["medicines"] })}
+            onSuccess={() => {
+              qc.invalidateQueries({ queryKey: ["medicines"] });
+              qc.invalidateQueries({ queryKey: ["import-history"] });
+            }}
           />
 
           <ImportCard
@@ -131,7 +134,10 @@ function ImportExportPage() {
             icon={<Package className="h-5 w-5" />}
             color="bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
             onUpload={importInventory}
-            onSuccess={() => qc.invalidateQueries({ queryKey: ["inventory"] })}
+            onSuccess={() => {
+              qc.invalidateQueries({ queryKey: ["inventory"] });
+              qc.invalidateQueries({ queryKey: ["import-history"] });
+            }}
           />
 
           <ImportCard
@@ -140,7 +146,10 @@ function ImportExportPage() {
             icon={<Truck className="h-5 w-5" />}
             color="bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
             onUpload={importSuppliers}
-            onSuccess={() => qc.invalidateQueries({ queryKey: ["suppliers"] })}
+            onSuccess={() => {
+              qc.invalidateQueries({ queryKey: ["suppliers"] });
+              qc.invalidateQueries({ queryKey: ["import-history"] });
+            }}
           />
         </div>
       )}
