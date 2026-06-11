@@ -68,7 +68,11 @@ function DashboardLayout() {
               >
                 <RefreshCw className="h-4 w-4" />
               </button>
-              <button className="relative grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground transition-colors">
+              <button
+                onClick={() => navigate({ to: "/dashboard/notifications" })}
+                title="Notifications"
+                className="relative grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground transition-colors"
+              >
                 <Bell className="h-4 w-4" />
                 <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-danger" />
               </button>
