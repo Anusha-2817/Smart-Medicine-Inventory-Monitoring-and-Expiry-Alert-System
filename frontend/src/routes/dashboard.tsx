@@ -3,7 +3,8 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app/AppSidebar";
 import { Search, Bell, LogOut, RefreshCw } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { GlobalSearch } from "@/components/app/GlobalSearch";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/dashboard")({
@@ -14,6 +15,18 @@ function DashboardLayout() {
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setSearchOpen((open) => !open);
+      }
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -40,13 +53,14 @@ function DashboardLayout() {
               <span>Overview</span>
             </div>
             <div className="ml-auto flex items-center gap-3">
-              <div className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-sm text-muted-foreground md:flex">
+              <button
+                type="button"
+                className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-sm text-muted-foreground md:flex hover:bg-accent/50 transition-colors outline-none focus:ring-2 focus:ring-ring"
+                onClick={() => setSearchOpen(true)}
+              >
                 <Search className="h-3.5 w-3.5" />
-                <input
-                  className="w-56 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-                  placeholder="Search medicines, batches, suppliers…"
-                />
-              </div>
+                <span className="w-48 text-left text-sm opacity-70">Search Medistock...</span>
+              </button>
               <button
                 onClick={() => qc.invalidateQueries()}
                 title="Refresh"
@@ -74,6 +88,7 @@ function DashboardLayout() {
             <Outlet />
           </main>
         </div>
+        <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
       </div>
     </SidebarProvider>
   );
