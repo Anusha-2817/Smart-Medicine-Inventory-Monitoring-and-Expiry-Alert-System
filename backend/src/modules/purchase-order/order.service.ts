@@ -38,8 +38,72 @@ export const createOrder = async (data: {
   });
 };
 
-export const updateOrderStatus = async (id: string, status: string) =>
-  prisma.purchaseOrder.update({ where: { id }, data: { status: status as any } });
+export const updateOrderStatus = async (id: string, status: string, userId?: string) => {
+  if (status === "RECEIVED") {
+    return prisma.$transaction(async (tx) => {
+      const order = await tx.purchaseOrder.findUniqueOrThrow({
+        where: { id },
+        include: { items: true },
+      });
+
+      if (order.status !== "ORDERED") {
+        throw new Error("Only ORDERED purchase orders can be received.");
+      }
+
+      for (let i = 0; i < order.items.length; i++) {
+        const item = order.items[i];
+        
+        // Auto-generate batch number
+        const batchNumber = `PO-${order.id.split("-")[0].toUpperCase()}-${i + 1}`;
+        
+        // Default expiry date: 1 year from now
+        const expiryDate = new Date();
+        expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+
+        // Create the InventoryBatch
+        const batch = await tx.inventoryBatch.create({
+          data: {
+            medicineId: item.medicineId,
+            supplierId: order.supplierId,
+            batchNumber,
+            quantity: item.orderedQuantity,
+            unitCost: item.unitPrice,
+            expiryDate,
+          },
+        });
+
+        // Create the StockMovement
+        await tx.stockMovement.create({
+          data: {
+            batchId: batch.id,
+            movementType: "STOCK_IN",
+            quantity: item.orderedQuantity,
+            userId: userId || order.createdBy,
+            notes: `Received from Purchase Order ${order.id.split("-")[0]}`,
+          },
+        });
+
+        // Update the received quantity on the PO item
+        await tx.purchaseOrderItem.update({
+          where: { id: item.id },
+          data: { receivedQuantity: item.orderedQuantity },
+        });
+      }
+
+      // Update the overall PO status
+      return tx.purchaseOrder.update({
+        where: { id },
+        data: { status: "RECEIVED" },
+      });
+    });
+  }
+
+  // Normal status update
+  return prisma.purchaseOrder.update({
+    where: { id },
+    data: { status: status as any },
+  });
+};
 
 export const deleteOrder = async (id: string) =>
   prisma.purchaseOrder.delete({ where: { id } });

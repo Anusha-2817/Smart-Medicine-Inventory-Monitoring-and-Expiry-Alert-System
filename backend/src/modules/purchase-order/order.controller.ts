@@ -21,7 +21,7 @@ export const create = async (req: Request, res: Response) => {
 };
 export const updateStatus = async (req: Request, res: Response) => {
   try {
-    const data = await svc.updateOrderStatus(req.params["id"] as string, req.body.status);
+    const data = await svc.updateOrderStatus(req.params["id"] as string, req.body.status, getUserId(req));
     res.json({ success: true, data });
   } catch (err: any) { res.status(400).json({ success: false, message: err.message }); }
 };
