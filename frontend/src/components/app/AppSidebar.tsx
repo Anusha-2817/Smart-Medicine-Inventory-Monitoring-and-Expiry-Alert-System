@@ -1,7 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard, Pill, Boxes, ArrowLeftRight, Truck, ClipboardList,
-  BellRing, Bell, FileSpreadsheet, FileBarChart, Users, Settings,
+  BellRing, Bell, FileSpreadsheet, FileBarChart, Users, Settings, ShieldCheck
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
@@ -13,6 +13,7 @@ const main = [
   { title: "Medicines", url: "/dashboard/medicines", icon: Pill },
   { title: "Inventory", url: "/dashboard/inventory", icon: Boxes },
   { title: "Stock Movements", url: "/dashboard/movements", icon: ArrowLeftRight },
+  { title: "Inventory Audit", url: "/dashboard/audit", icon: ShieldCheck },
   { title: "Suppliers", url: "/dashboard/suppliers", icon: Truck },
   { title: "Purchase Orders", url: "/dashboard/orders", icon: ClipboardList },
 ];

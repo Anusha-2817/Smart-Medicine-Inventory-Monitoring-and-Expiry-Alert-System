@@ -1,12 +1,16 @@
-import { Boxes, Layers, TrendingDown, AlertTriangle, Ban, Truck, type LucideIcon } from "lucide-react";
+import { Boxes, Layers, TrendingDown, TrendingUp, AlertTriangle, Ban, Truck, ArrowLeftRight, RotateCcw, FilePlus, type LucideIcon } from "lucide-react";
 
 const iconMap: Record<string, LucideIcon> = {
   boxes: Boxes,
   layers: Layers,
   "trending-down": TrendingDown,
+  "trending-up": TrendingUp,
   "alert-triangle": AlertTriangle,
   ban: Ban,
   truck: Truck,
+  "arrow-left-right": ArrowLeftRight,
+  "rotate-ccw": RotateCcw,
+  "file-plus": FilePlus,
 };
 
 const toneMap = {
