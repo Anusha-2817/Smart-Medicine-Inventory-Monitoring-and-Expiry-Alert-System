@@ -17,6 +17,7 @@ import reportRoutes from "./modules/report/report.routes";
 import userRoutes from "./modules/user/user.routes";
 import demoRoutes from "./modules/demo/demo.routes";
 import auditRoutes from "./modules/audit/audit.routes";
+import searchRoutes from "./modules/search/search.routes";
 
 const app = express();
 
@@ -45,6 +46,7 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/demo", demoRoutes);
 app.use("/api/audit", auditRoutes);
+app.use("/api/search", searchRoutes);
 app.use("/api", importExportRoutes);
 
 export default app;
