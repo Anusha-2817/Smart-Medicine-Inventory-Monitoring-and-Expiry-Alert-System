@@ -1,9 +1,10 @@
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app/AppSidebar";
-import { Search, Bell, LogOut } from "lucide-react";
+import { Search, Bell, LogOut, RefreshCw } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardLayout,
@@ -12,6 +13,7 @@ export const Route = createFileRoute("/dashboard")({
 function DashboardLayout() {
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
+  const qc = useQueryClient();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -45,7 +47,14 @@ function DashboardLayout() {
                   placeholder="Search medicines, batches, suppliers…"
                 />
               </div>
-              <button className="relative grid h-9 w-9 place-items-center rounded-full border border-border bg-card">
+              <button
+                onClick={() => qc.invalidateQueries()}
+                title="Refresh"
+                className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <RefreshCw className="h-4 w-4" />
+              </button>
+              <button className="relative grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground transition-colors">
                 <Bell className="h-4 w-4" />
                 <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-danger" />
               </button>
@@ -55,7 +64,7 @@ function DashboardLayout() {
               <button
                 onClick={logout}
                 title="Sign out"
-                className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground"
+                className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground transition-colors"
               >
                 <LogOut className="h-4 w-4" />
               </button>

@@ -4,6 +4,10 @@ export const getOrders = async (params?: { status?: string; page?: number }) => 
   const { data } = await apiClient.get("/orders", { params });
   return data;
 };
+export const getOrder = async (id: string) => {
+  const { data } = await apiClient.get(`/orders/${id}`);
+  return data.data;
+};
 export const createOrder = async (body: Record<string, unknown>) => {
   const { data } = await apiClient.post("/orders", body);
   return data.data;
