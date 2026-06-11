@@ -23,6 +23,7 @@ import { Route as DashboardMovementsRouteImport } from './routes/dashboard.movem
 import { Route as DashboardMedicinesRouteImport } from './routes/dashboard.medicines'
 import { Route as DashboardInventoryRouteImport } from './routes/dashboard.inventory'
 import { Route as DashboardImportExportRouteImport } from './routes/dashboard.import-export'
+import { Route as DashboardAuditRouteImport } from './routes/dashboard.audit'
 import { Route as DashboardAlertsRouteImport } from './routes/dashboard.alerts'
 
 const LoginRoute = LoginRouteImport.update({
@@ -95,6 +96,11 @@ const DashboardImportExportRoute = DashboardImportExportRouteImport.update({
   path: '/import-export',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardAuditRoute = DashboardAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardAlertsRoute = DashboardAlertsRouteImport.update({
   id: '/alerts',
   path: '/alerts',
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/dashboard/alerts': typeof DashboardAlertsRoute
+  '/dashboard/audit': typeof DashboardAuditRoute
   '/dashboard/import-export': typeof DashboardImportExportRoute
   '/dashboard/inventory': typeof DashboardInventoryRoute
   '/dashboard/medicines': typeof DashboardMedicinesRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/dashboard/alerts': typeof DashboardAlertsRoute
+  '/dashboard/audit': typeof DashboardAuditRoute
   '/dashboard/import-export': typeof DashboardImportExportRoute
   '/dashboard/inventory': typeof DashboardInventoryRoute
   '/dashboard/medicines': typeof DashboardMedicinesRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/dashboard/alerts': typeof DashboardAlertsRoute
+  '/dashboard/audit': typeof DashboardAuditRoute
   '/dashboard/import-export': typeof DashboardImportExportRoute
   '/dashboard/inventory': typeof DashboardInventoryRoute
   '/dashboard/medicines': typeof DashboardMedicinesRoute
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/dashboard/alerts'
+    | '/dashboard/audit'
     | '/dashboard/import-export'
     | '/dashboard/inventory'
     | '/dashboard/medicines'
@@ -175,6 +185,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/dashboard/alerts'
+    | '/dashboard/audit'
     | '/dashboard/import-export'
     | '/dashboard/inventory'
     | '/dashboard/medicines'
@@ -192,6 +203,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/dashboard/alerts'
+    | '/dashboard/audit'
     | '/dashboard/import-export'
     | '/dashboard/inventory'
     | '/dashboard/medicines'
@@ -311,6 +323,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardImportExportRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/audit': {
+      id: '/dashboard/audit'
+      path: '/audit'
+      fullPath: '/dashboard/audit'
+      preLoaderRoute: typeof DashboardAuditRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/alerts': {
       id: '/dashboard/alerts'
       path: '/alerts'
@@ -323,6 +342,7 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteChildren {
   DashboardAlertsRoute: typeof DashboardAlertsRoute
+  DashboardAuditRoute: typeof DashboardAuditRoute
   DashboardImportExportRoute: typeof DashboardImportExportRoute
   DashboardInventoryRoute: typeof DashboardInventoryRoute
   DashboardMedicinesRoute: typeof DashboardMedicinesRoute
@@ -338,6 +358,7 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAlertsRoute: DashboardAlertsRoute,
+  DashboardAuditRoute: DashboardAuditRoute,
   DashboardImportExportRoute: DashboardImportExportRoute,
   DashboardInventoryRoute: DashboardInventoryRoute,
   DashboardMedicinesRoute: DashboardMedicinesRoute,
