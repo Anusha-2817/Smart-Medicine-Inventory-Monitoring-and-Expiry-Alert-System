@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Search, Plus, Pencil, Trash2 } from "lucide-react";
 import { getMedicines, deleteMedicine } from "@/lib/services/medicines.service";
 import { MedicineDialog } from "@/components/app/MedicineDialog";
+import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/dashboard/medicines")({
   head: () => ({ meta: [{ title: "Medicines · MediStock" }] }),
@@ -16,6 +17,8 @@ function MedicinesPage() {
   const [page, setPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<any | null>(null);
+  const { user } = useAuth();
+  const canEdit = user?.role === "ADMIN" || user?.role === "PHARMACIST";
 
   const { data, isLoading } = useQuery({
     queryKey: ["medicines", search, page],
@@ -37,12 +40,14 @@ function MedicinesPage() {
           <h1 className="font-serif text-4xl tracking-tight">Medicines</h1>
           <p className="mt-1 text-sm text-muted-foreground">{total} medicines in the system</p>
         </div>
-        <button 
-          onClick={() => { setEditTarget(null); setDialogOpen(true); }}
-          className="inline-flex h-9 items-center gap-2 rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90"
-        >
-          <Plus className="h-4 w-4" /> Add Medicine
-        </button>
+        {canEdit && (
+          <button 
+            onClick={() => { setEditTarget(null); setDialogOpen(true); }}
+            className="inline-flex h-9 items-center gap-2 rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90"
+          >
+            <Plus className="h-4 w-4" /> Add Medicine
+          </button>
+        )}
       </div>
 
       {/* Search */}
@@ -88,15 +93,17 @@ function MedicinesPage() {
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">{m.requiresPrescription ? "Yes" : "No"}</td>
                 <td className="px-4 py-3">
-                  <div className="flex items-center justify-end gap-2">
-                    <button 
-                      onClick={() => { setEditTarget(m); setDialogOpen(true); }}
-                      className="grid h-7 w-7 place-items-center rounded-lg border border-border hover:bg-secondary"
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                    </button>
-                    <button onClick={() => del.mutate(m.id)} className="grid h-7 w-7 place-items-center rounded-lg border border-border text-danger hover:bg-danger-soft"><Trash2 className="h-3.5 w-3.5" /></button>
-                  </div>
+                  {canEdit && (
+                    <div className="flex items-center justify-end gap-2">
+                      <button 
+                        onClick={() => { setEditTarget(m); setDialogOpen(true); }}
+                        className="grid h-7 w-7 place-items-center rounded-lg border border-border hover:bg-secondary"
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                      <button onClick={() => del.mutate(m.id)} className="grid h-7 w-7 place-items-center rounded-lg border border-border text-danger hover:bg-danger-soft"><Trash2 className="h-3.5 w-3.5" /></button>
+                    </div>
+                  )}
                 </td>
               </tr>
             ))}

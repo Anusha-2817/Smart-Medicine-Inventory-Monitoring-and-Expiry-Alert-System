@@ -3,6 +3,7 @@ import {
   LayoutDashboard, Pill, Boxes, ArrowLeftRight, Truck, ClipboardList,
   BellRing, Bell, FileSpreadsheet, FileBarChart, Users, Settings, ShieldCheck
 } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarFooter,
@@ -32,6 +33,22 @@ const admin = [
 
 export function AppSidebar() {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
+  const { user } = useAuth();
+  const role = user?.role;
+
+  const mainItems = main.filter((item) => {
+    if (item.title === "Inventory Audit" || item.title === "Suppliers") return role === "ADMIN";
+    if (item.title === "Purchase Orders" || item.title === "Stock Movements") return role === "ADMIN" || role === "PHARMACIST";
+    return true;
+  });
+
+  const secondaryItems = secondary.filter((item) => {
+    if (item.title === "Import / Export") return role === "ADMIN";
+    if (item.title === "Reports") return role === "ADMIN" || role === "PHARMACIST";
+    return true;
+  });
+
+  const adminItems = admin.filter(() => role === "ADMIN");
 
   const renderGroup = (label: string, items: typeof secondary) => (
     <SidebarGroup>
@@ -74,9 +91,9 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
       <SidebarContent>
-        {renderGroup("Operations", main)}
-        {renderGroup("Monitoring", secondary)}
-        {renderGroup("Admin", admin)}
+        {renderGroup("Operations", mainItems)}
+        {renderGroup("Monitoring", secondaryItems)}
+        {adminItems.length > 0 && renderGroup("Admin", adminItems)}
       </SidebarContent>
       <SidebarFooter>
         <div className="px-3 py-2 text-xs text-muted-foreground">

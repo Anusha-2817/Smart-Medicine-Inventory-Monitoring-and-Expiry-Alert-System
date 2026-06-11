@@ -6,6 +6,7 @@ import { getOrders, updateOrderStatus } from "@/lib/services/orders.service";
 import { PurchaseOrderDialog } from "@/components/app/PurchaseOrderDialog";
 import { PurchaseOrderDetailsDialog } from "@/components/app/PurchaseOrderDetailsDialog";
 import * as Dialog from "@radix-ui/react-dialog";
+import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/dashboard/orders")({
   head: () => ({ meta: [{ title: "Purchase Orders · MediStock" }] }),
@@ -33,6 +34,8 @@ function OrdersPage() {
   const [detailsOrderId, setDetailsOrderId] = useState<string | null>(null);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
   const [actionMenuOpen, setActionMenuOpen] = useState<string | null>(null);
+  const { user } = useAuth();
+  const canEdit = user?.role === "ADMIN" || user?.role === "PHARMACIST";
 
   const { data, isLoading } = useQuery({
     queryKey: ["orders"],
@@ -88,12 +91,14 @@ function OrdersPage() {
           <h1 className="font-serif text-4xl tracking-tight">Purchase Orders</h1>
           <p className="mt-1 text-sm text-muted-foreground">{data?.total ?? 0} orders total</p>
         </div>
-        <button 
-          onClick={() => setDialogOpen(true)}
-          className="inline-flex h-9 items-center gap-2 rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90 transition-colors"
-        >
-          <Plus className="h-4 w-4" /> New Order
-        </button>
+        {canEdit && (
+          <button 
+            onClick={() => setDialogOpen(true)}
+            className="inline-flex h-9 items-center gap-2 rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90 transition-colors"
+          >
+            <Plus className="h-4 w-4" /> New Order
+          </button>
+        )}
       </div>
 
       <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
@@ -140,7 +145,7 @@ function OrdersPage() {
                           onClick={() => setActionMenuOpen(null)}
                         />
                         <div className="absolute right-0 z-20 mt-1 w-40 origin-top-right rounded-xl border border-border bg-card shadow-lg outline-none overflow-hidden py-1">
-                          {o.status === "DRAFT" && (
+                          {canEdit && o.status === "DRAFT" && (
                             <>
                               <button onClick={() => handleAction(o.id, "PLACE")} className="flex w-full items-center gap-2 px-4 py-2 text-sm hover:bg-secondary text-left">
                                 <Send className="h-4 w-4 text-blue-500" /> Place Order
@@ -150,7 +155,7 @@ function OrdersPage() {
                               </button>
                             </>
                           )}
-                          {o.status === "ORDERED" && (
+                          {canEdit && o.status === "ORDERED" && (
                             <>
                               <button onClick={() => handleAction(o.id, "RECEIVE")} className="flex w-full items-center gap-2 px-4 py-2 text-sm hover:bg-secondary text-left text-mint">
                                 <CheckCircle className="h-4 w-4" /> Receive Order

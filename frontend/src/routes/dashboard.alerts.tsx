@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAlerts, resolveAlert, getAlertSummary, resolveBulkAlerts } from "@/lib/services/alerts.service";
 import { AlertCircle, AlertTriangle, CheckCircle, Search, Info, CheckSquare, Square, Inbox } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/dashboard/alerts")({
   head: () => ({ meta: [{ title: "Alerts & Notifications · MediStock" }] }),
@@ -21,6 +22,8 @@ function AlertsPage() {
   const [statusFilter, setStatusFilter] = useState("UNRESOLVED");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedAlerts, setSelectedAlerts] = useState<Set<string>>(new Set());
+  const { user } = useAuth();
+  const canEdit = user?.role === "ADMIN" || user?.role === "PHARMACIST";
 
   // Queries
   const { data: summary } = useQuery({
@@ -85,7 +88,7 @@ function AlertsPage() {
           >
             Refresh
           </button>
-          {selectedAlerts.size > 0 && (
+          {canEdit && selectedAlerts.size > 0 && (
             <button
               onClick={() => resolveBulk.mutate(Array.from(selectedAlerts))}
               className="inline-flex items-center gap-2 rounded-full bg-mint px-4 py-2 text-sm font-medium text-mint-foreground hover:bg-mint/90 transition-colors shadow-sm"
@@ -184,11 +187,13 @@ function AlertsPage() {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border bg-secondary/40">
-                <th className="p-4 font-medium text-muted-foreground w-12">
-                  <button onClick={handleSelectAll} className="flex text-muted-foreground hover:text-foreground">
-                    {selectedAlerts.size === alerts.length && alerts.length > 0 ? <CheckSquare className="h-4 w-4" /> : <Square className="h-4 w-4" />}
-                  </button>
-                </th>
+                {canEdit && (
+                  <th className="p-4 font-medium text-muted-foreground w-12">
+                    <button onClick={handleSelectAll} className="flex text-muted-foreground hover:text-foreground">
+                      {selectedAlerts.size === alerts.length && alerts.length > 0 ? <CheckSquare className="h-4 w-4" /> : <Square className="h-4 w-4" />}
+                    </button>
+                  </th>
+                )}
                 <th className="px-4 py-3 font-medium text-muted-foreground">Severity</th>
                 <th className="px-4 py-3 font-medium text-muted-foreground">Alert & Medicine</th>
                 <th className="px-4 py-3 font-medium text-muted-foreground">Batch</th>
@@ -224,11 +229,13 @@ function AlertsPage() {
 
                   return (
                     <tr key={alert.id} className={`transition-colors hover:bg-secondary/30 ${isSelected ? "bg-secondary/50" : ""}`}>
-                      <td className="p-4">
-                        <button onClick={() => handleSelect(alert.id)} className="flex text-muted-foreground hover:text-foreground">
-                          {isSelected ? <CheckSquare className="h-4 w-4 text-mint" /> : <Square className="h-4 w-4" />}
-                        </button>
-                      </td>
+                      {canEdit && (
+                        <td className="p-4">
+                          <button onClick={() => handleSelect(alert.id)} className="flex text-muted-foreground hover:text-foreground">
+                            {isSelected ? <CheckSquare className="h-4 w-4 text-mint" /> : <Square className="h-4 w-4" />}
+                          </button>
+                        </td>
+                      )}
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${sev.bg} ${sev.text}`}>
                           <Icon className="h-3 w-3" />
@@ -261,7 +268,7 @@ function AlertsPage() {
                         )}
                       </td>
                       <td className="px-4 py-3">
-                        {!alert.isResolved && (
+                        {canEdit && !alert.isResolved && (
                           <button
                             onClick={() => resolve.mutate(alert.id)}
                             className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium hover:bg-secondary transition-colors"
