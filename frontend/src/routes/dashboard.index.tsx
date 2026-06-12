@@ -9,6 +9,7 @@ import { ExpiryTrendChart } from "@/components/app/ExpiryTrendChart";
 import { SupplierPieChart } from "@/components/app/SupplierPieChart";
 import { RecentActivity } from "@/components/app/RecentActivity";
 import { StockMovementDialog } from "@/components/app/StockMovementDialog";
+import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/dashboard/")({
   head: () => ({
@@ -28,6 +29,7 @@ const severityLegend = [
 ];
 
 function DashboardPage() {
+  const { user } = useAuth();
   const [movementOpen, setMovementOpen] = useState(false);
   const { data: stats, isLoading } = useQuery({
     queryKey: ["dashboard-stats"],
@@ -51,7 +53,7 @@ function DashboardPage() {
     <div className="mx-auto max-w-7xl px-6 py-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-serif text-4xl tracking-tight">Good morning.</h1>
+          <h1 className="font-serif text-4xl tracking-tight">Good morning{user?.name ? `, ${user.name.split(' ')[0]}` : ""}.</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {isLoading ? "Loading dashboard…" : "Here's how the pharmacy is doing today."}
           </p>
