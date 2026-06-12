@@ -43,7 +43,7 @@ const TARGET = {
   suppliers: 20,
   users: 20,
   medicines: 125,
-  batchesPerMedicine: [2, 5],   // each medicine gets 2–5 batches
+  batchesPerMedicine: [2, 5], // each medicine gets 2–5 batches
   movements: 1200,
   purchaseOrders: 60,
 } as const;
@@ -61,7 +61,7 @@ async function main() {
 
   const now = new Date();
   const threeYearsAgo = addMonths(now, -36);
-  const oneYearAgo    = addMonths(now, -12);
+  const oneYearAgo = addMonths(now, -12);
 
   // ──────────────────────────────────────────────────────────────────
   // STEP 1 — SUPPLIERS
@@ -116,8 +116,9 @@ async function main() {
   console.log("💊 [3/7] Creating medicines…");
 
   // Take up to TARGET.medicines from pool, cycling if needed
-  const medicinePool = Array.from({ length: TARGET.medicines }, (_, i) =>
-    MEDICINE_POOL[i % MEDICINE_POOL.length]
+  const medicinePool = Array.from(
+    { length: TARGET.medicines },
+    (_, i) => MEDICINE_POOL[i % MEDICINE_POOL.length],
   );
 
   const createdMedicines: any[] = [];
@@ -129,7 +130,10 @@ async function main() {
     if (!medicine) {
       medicine = await prisma.medicine.create({
         data: {
-          name: i < MEDICINE_POOL.length ? def.name : `${def.name} (${Math.floor(i / MEDICINE_POOL.length) + 1})`,
+          name:
+            i < MEDICINE_POOL.length
+              ? def.name
+              : `${def.name} (${Math.floor(i / MEDICINE_POOL.length) + 1})`,
           genericName: def.genericName,
           category: def.category,
           manufacturer: def.manufacturer,
@@ -153,7 +157,10 @@ async function main() {
   const createdBatches: any[] = [];
 
   for (const med of createdMedicines) {
-    const numBatches = randInt(TARGET.batchesPerMedicine[0], TARGET.batchesPerMedicine[1]);
+    const numBatches = randInt(
+      TARGET.batchesPerMedicine[0],
+      TARGET.batchesPerMedicine[1],
+    );
     const supplier = pick(createdSuppliers);
     const costRange: [number, number] = med._def.unitCostRange ?? [5, 50];
 
@@ -161,9 +168,14 @@ async function main() {
       batchSeq++;
       const { expiryDate, batchStatus } = generateExpiryDate(now);
       const manufacturingDate = generateManufacturingDate(expiryDate);
-      const batchNumber = generateBatchNumber(supplier.name, expiryDate, batchSeq);
+      const batchNumber = generateBatchNumber(
+        supplier.name,
+        expiryDate,
+        batchSeq,
+      );
       const unitCost = randFloat(costRange[0], costRange[1]);
-      const quantity = batchStatus === "EXPIRED" ? randInt(0, 50) : generateQuantity();
+      const quantity =
+        batchStatus === "EXPIRED" ? randInt(0, 50) : generateQuantity();
 
       // Check uniqueness on (medicineId, batchNumber)
       const existing = await prisma.inventoryBatch.findFirst({
@@ -201,15 +213,16 @@ async function main() {
     // Weight recent dates more heavily (pharmacy is more active recently)
     function generateMovementDate(): Date {
       const r = Math.random();
-      if (r < 0.10) return addDays(now, 0);                          // today
-      if (r < 0.20) return addDays(now, -1);                         // yesterday
-      if (r < 0.35) return randDate(addDays(now, -7), now);          // this week
-      if (r < 0.55) return randDate(addDays(now, -30), addDays(now, -7));  // last month
-      return randDate(oneYearAgo, addDays(now, -30));                // past year
+      if (r < 0.1) return addDays(now, 0); // today
+      if (r < 0.2) return addDays(now, -1); // yesterday
+      if (r < 0.35) return randDate(addDays(now, -7), now); // this week
+      if (r < 0.55) return randDate(addDays(now, -30), addDays(now, -7)); // last month
+      return randDate(oneYearAgo, addDays(now, -30)); // past year
     }
 
     let movementsCreated = 0;
-    const batchForMovement = activeBatches.length > 0 ? activeBatches : createdBatches;
+    const batchForMovement =
+      activeBatches.length > 0 ? activeBatches : createdBatches;
 
     for (let i = 0; i < TARGET.movements; i++) {
       const batch = pick(batchForMovement);
@@ -232,7 +245,9 @@ async function main() {
     }
     log(`✅ ${movementsCreated} stock movements created`);
   } else {
-    log(`ℹ️  Stock movements already seeded (${existingMovementCount} existing)`);
+    log(
+      `ℹ️  Stock movements already seeded (${existingMovementCount} existing)`,
+    );
   }
 
   // ──────────────────────────────────────────────────────────────────
@@ -249,7 +264,7 @@ async function main() {
       const user = pick(createdUsers);
       const status = weightedPick(
         PO_STATUS_WEIGHTS.statuses as unknown as string[],
-        PO_STATUS_WEIGHTS.weights
+        PO_STATUS_WEIGHTS.weights,
       );
 
       // Order date: spread over last 8 months, some overdue
@@ -257,7 +272,9 @@ async function main() {
 
       // Pick 2–8 medicines for this order
       const numItems = randInt(2, 8);
-      const orderMeds = [...activeMeds].sort(() => Math.random() - 0.5).slice(0, numItems);
+      const orderMeds = [...activeMeds]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, numItems);
 
       await prisma.purchaseOrder.create({
         data: {
@@ -268,10 +285,13 @@ async function main() {
           items: {
             create: orderMeds.map((m: any) => {
               const ordered = randInt(50, 500);
-              const received = status === "RECEIVED"
-                ? randInt(Math.floor(ordered * 0.8), ordered)   // 80–100% received
-                : 0;
-              const costRange: [number, number] = m._def?.unitCostRange ?? [5, 50];
+              const received =
+                status === "RECEIVED"
+                  ? randInt(Math.floor(ordered * 0.8), ordered) // 80–100% received
+                  : 0;
+              const costRange: [number, number] = m._def?.unitCostRange ?? [
+                5, 50,
+              ];
               return {
                 medicineId: m.id,
                 orderedQuantity: ordered,
@@ -299,8 +319,13 @@ async function main() {
       include: { medicine: { select: { name: true, reorderThreshold: true } } },
     });
 
+    // Fetch eligible users for notifications (ADMIN and PHARMACIST only)
+    const eligibleUsers = await prisma.user.findMany({
+      where: { role: { in: ["ADMIN", "PHARMACIST"] } },
+    });
+
     let alertsCreated = 0;
-    const in7Days  = addDays(now, 7);
+    const in7Days = addDays(now, 7);
     const in30Days = addDays(now, 30);
 
     for (const batch of allBatches) {
@@ -319,7 +344,7 @@ async function main() {
           alertType: "EXPIRY",
           severity: "CRITICAL",
           message: `Batch ${batch.batchNumber} (${batch.medicine.name}) has EXPIRED. Immediate quarantine required.`,
-          isResolved: Math.random() > 0.6,   // 40% unresolved
+          isResolved: Math.random() > 0.6, // 40% unresolved
           createdAt: addDays(batch.expiryDate, 1),
         });
       } else if (batch.expiryDate <= in7Days) {
@@ -341,8 +366,12 @@ async function main() {
       }
 
       // LOW STOCK alerts
-      if (batch.status === "ACTIVE" && batch.quantity <= batch.medicine.reorderThreshold) {
-        const isCritical = batch.quantity < batch.medicine.reorderThreshold * 0.3;
+      if (
+        batch.status === "ACTIVE" &&
+        batch.quantity <= batch.medicine.reorderThreshold
+      ) {
+        const isCritical =
+          batch.quantity < batch.medicine.reorderThreshold * 0.3;
         alertsForBatch.push({
           alertType: "LOW_STOCK",
           severity: isCritical ? "CRITICAL" : "WARNING",
@@ -353,7 +382,11 @@ async function main() {
       }
 
       // DEAD STOCK alert (quantity > 0 but batch expiring very soon with lots of stock)
-      if (batch.status === "ACTIVE" && batch.quantity > 200 && batch.expiryDate <= in30Days) {
+      if (
+        batch.status === "ACTIVE" &&
+        batch.quantity > 200 &&
+        batch.expiryDate <= in30Days
+      ) {
         alertsForBatch.push({
           alertType: "DEAD_STOCK",
           severity: "INFO",
@@ -368,7 +401,7 @@ async function main() {
           ? addDays(alertData.createdAt, randInt(1, 10))
           : undefined;
 
-        await prisma.alert.create({
+        const createdAlert = await prisma.alert.create({
           data: {
             batchId: batch.id,
             alertType: alertData.alertType,
@@ -379,6 +412,20 @@ async function main() {
             createdAt: alertData.createdAt,
           },
         });
+
+        // Create notifications for eligible users
+        for (const user of eligibleUsers) {
+          await prisma.notification.create({
+            data: {
+              userId: user.id,
+              title: "Inventory Alert",
+              message: alertData.message,
+              type: alertData.severity,
+              createdAt: alertData.createdAt,
+            },
+          });
+        }
+
         alertsCreated++;
       }
     }
