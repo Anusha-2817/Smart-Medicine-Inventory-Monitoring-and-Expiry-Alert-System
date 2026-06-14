@@ -1,6 +1,6 @@
 import apiClient from "./api-client";
 
-export const getSuppliers = async (params?: { search?: string; page?: number }) => {
+export const getSuppliers = async (params?: { search?: string; page?: number; limit?: number }) => {
   const { data } = await apiClient.get("/suppliers", { params });
   return data;
 };
