@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
+import path from "path";
+import fs from "fs";
 
 import authRoutes from "./modules/auth/auth.routes";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes";
@@ -23,6 +25,7 @@ const app = express();
 
 // Middlewares
 const allowedOrigins = [
+  "http://localhost:5000",
   "http://localhost:5173",
   process.env.FRONTEND_URL,
 ].filter(Boolean);
@@ -43,7 +46,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 // Health check
-app.get("/", (_req, res) => {
+app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", message: "MediStock API Running" });
 });
 
@@ -63,5 +66,24 @@ app.use("/api/demo", demoRoutes);
 app.use("/api/audit", auditRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api", importExportRoutes);
+
+// Serve frontend static files for single-service deployments
+const publicPath = path.join(process.cwd(), "public");
+// console.log("PUBLIC PATH =", publicPath);
+// console.log("INDEX EXISTS =", fs.existsSync(path.join(publicPath, "index.html")));
+// console.log("ASSETS EXISTS =", fs.existsSync(path.join(publicPath, "assets")));
+
+
+app.use(express.static(publicPath));
+
+// SPA fallback: for any GET request that is not an API call, serve index.html (Express 5 compatible)
+app.use((req, res, next) => {
+  if (req.method !== "GET") return next();
+  if (req.path.startsWith("/api")) return next();
+  if (/\.[a-zA-Z0-9]+$/.test(req.path)) return next();
+  res.sendFile(path.join(publicPath, "index.html"), (err) => {
+    if (err) return next(err);
+  });
+});
 
 export default app;

@@ -3,9 +3,8 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app/AppSidebar";
 import { Search, Bell, LogOut, RefreshCw } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { useEffect, useState } from "react";
+import { useEffect, useState, startTransition } from "react";
 import { GlobalSearch } from "@/components/app/GlobalSearch";
-import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardLayout,
@@ -14,7 +13,6 @@ export const Route = createFileRoute("/dashboard")({
 function DashboardLayout() {
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
-  const qc = useQueryClient();
   const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
@@ -37,8 +35,25 @@ function DashboardLayout() {
   if (!isAuthenticated) return null;
 
   const initials = user?.name
-    ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    ? user.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
     : "??";
+
+  const handleRefresh = () => {
+    startTransition(() => {
+      navigate({ to: "/dashboard" });
+    });
+  };
+
+  const handleNotifications = () => {
+    startTransition(() => {
+      navigate({ to: "/dashboard/notifications" });
+    });
+  };
 
   return (
     <SidebarProvider>
@@ -62,14 +77,15 @@ function DashboardLayout() {
                 <span className="w-48 text-left text-sm opacity-70">Search Medistock...</span>
               </button>
               <button
-                onClick={() => qc.invalidateQueries()}
+                onClick={handleRefresh}
                 title="Refresh"
                 className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground transition-colors"
               >
                 <RefreshCw className="h-4 w-4" />
               </button>
               <button
-                onClick={() => navigate({ to: "/dashboard/notifications" })}
+                type="button"
+                onClick={handleNotifications}
                 title="Notifications"
                 className="relative grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground transition-colors"
               >
