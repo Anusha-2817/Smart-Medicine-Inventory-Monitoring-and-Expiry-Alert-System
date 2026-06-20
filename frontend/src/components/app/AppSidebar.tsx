@@ -1,12 +1,31 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  LayoutDashboard, Pill, Boxes, ArrowLeftRight, Truck, ClipboardList,
-  BellRing, Bell, FileSpreadsheet, FileBarChart, Users, Settings, ShieldCheck
+  LayoutDashboard,
+  Pill,
+  Boxes,
+  ArrowLeftRight,
+  Truck,
+  ClipboardList,
+  BellRing,
+  Bell,
+  FileSpreadsheet,
+  FileBarChart,
+  Users,
+  Settings,
+  ShieldCheck,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import {
-  Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
-  SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarFooter,
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarHeader,
+  SidebarFooter,
 } from "@/components/ui/sidebar";
 
 const main = [
@@ -38,7 +57,8 @@ export function AppSidebar() {
 
   const mainItems = main.filter((item) => {
     if (item.title === "Inventory Audit" || item.title === "Suppliers") return role === "ADMIN";
-    if (item.title === "Purchase Orders" || item.title === "Stock Movements") return role === "ADMIN" || role === "PHARMACIST";
+    if (item.title === "Purchase Orders" || item.title === "Stock Movements")
+      return role === "ADMIN" || role === "PHARMACIST";
     return true;
   });
 
@@ -56,9 +76,10 @@ export function AppSidebar() {
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => {
-            const active = item.url === "/dashboard"
-              ? pathname === "/dashboard" || pathname === "/dashboard/"
-              : pathname.startsWith(item.url);
+            const active =
+              item.url === "/dashboard"
+                ? pathname === "/dashboard" || pathname === "/dashboard/"
+                : pathname.startsWith(item.url);
             return (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton asChild isActive={active}>
@@ -96,9 +117,7 @@ export function AppSidebar() {
         {adminItems.length > 0 && renderGroup("Admin", adminItems)}
       </SidebarContent>
       <SidebarFooter>
-        <div className="px-3 py-2 text-xs text-muted-foreground">
-          v1.0 · Demo mode
-        </div>
+        <div className="px-3 py-2 text-xs text-muted-foreground">v1.0</div>
       </SidebarFooter>
     </Sidebar>
   );
